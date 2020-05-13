@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Text;
 using System.Threading;
 
@@ -8,7 +8,7 @@ namespace ConwaysGameOfLife
     class Program
     {
         // The delay in milliseconds between board updates.
-        private const int DELAY = 50;
+        private static int delay = 250;
 
         // The cell colors.
         private const ConsoleColor DEAD_COLOR = ConsoleColor.White;
@@ -24,8 +24,8 @@ namespace ConwaysGameOfLife
         private static bool[,] board;
 
         // The dimensions of the board in cells.
-        private static int width = 32;
-        private static int height = 32;
+        private static int width = 50; //max 100
+        private static int height = 30; //max 60
 
         // True if cell rules can loop around edges.
         private static bool loopEdges = true;
@@ -33,19 +33,46 @@ namespace ConwaysGameOfLife
 
         static void Main(string[] args)
         {
-            // Use initializeRandomBoard for a larger, random board.
-            initializeDemoBoard();
 
-            initializeConsole();
-
-            // Run the game until the Escape key is pressed.
-            while (!Console.KeyAvailable || Console.ReadKey(true).Key != ConsoleKey.Escape)
+            while (true)
             {
-                Program.drawBoard();
-                Program.updateBoard();
+                Console.Clear();
+                Console.SetWindowSize(100,30);
+                //Abfrage welches Board erstellt werden soll
+                Console.WriteLine("Willkommen bei der Simulation von Conways Game of Life\n\nSie haben folgende Auswahlmöglichkeiten:\n(1) Zufälliges Board erstellen\n(2) Blinker erstellen\n(3) Kröte erstellen\n(4) Glider erstellen\n\nDrücken Sie die Escape Taste um zum Menü zurückzukehren.\n\nGeben Sie eine Zahl ein: ");
+                string s = Console.ReadLine();
+                Console.Clear();
 
-                // Wait for a bit between updates.
-                Thread.Sleep(DELAY);
+
+                // Use initializeRandomBoard for a larger, random board.
+                if (s == "1")
+                {
+                    initializeRandomBoard();
+                }
+                else if (s == "2")
+                {
+                    initializeDemoBoard();
+                }
+                else if (s == "3")
+                {
+                    initializeToadBoard();
+                }
+                else if(s == "4")
+                {
+                    initializeGliderBoard();
+                }
+
+                initializeConsole();
+
+                // Run the game until the Escape key is pressed.
+                while (!Console.KeyAvailable || Console.ReadKey(true).Key != ConsoleKey.Escape)
+                {
+                    Program.drawBoard();
+                    Program.updateBoard();
+
+                    // Wait for a bit between updates.
+                    Thread.Sleep(delay);
+                }
             }
         }
 
@@ -71,6 +98,9 @@ namespace ConwaysGameOfLife
         // Creates the initial board with a random state.
         private static void initializeRandomBoard()
         {
+            Program.width = 50;
+            Program.height = 30;
+
             var random = new Random();
 
             Program.board = new bool[Program.width, Program.height];
@@ -87,15 +117,51 @@ namespace ConwaysGameOfLife
         // Creates a 3x3 board with a blinker.
         private static void initializeDemoBoard()
         {
-            Program.width = 3;
-            Program.height = 3;
+            Program.width = 10;
+            Program.height = 10;
 
             Program.loopEdges = false;
 
-            Program.board = new bool[3, 3];
+            Program.board = new bool[10, 10];
             Program.board[1, 0] = true;
             Program.board[1, 1] = true;
             Program.board[1, 2] = true;
+ 
+        }
+
+        private static void initializeToadBoard()
+        {
+            Program.width = 10;
+            Program.height = 10;
+
+            Program.loopEdges = false;
+
+            Program.board = new bool[10, 10];
+
+            Program.board[2, 4] = true;
+            Program.board[3, 4] = true;
+            Program.board[4, 4] = true;
+            Program.board[3, 3] = true;
+            Program.board[4, 3] = true;
+            Program.board[5, 3] = true;
+        }
+
+        private static void initializeGliderBoard()
+        {
+            delay = 100;
+
+            Program.width = 50;
+            Program.height = 30;
+
+            Program.loopEdges = false;
+
+            Program.board = new bool[50, 30];
+
+            Program.board[2, 1] = true;
+            Program.board[3, 2] = true;
+            Program.board[1, 3] = true;
+            Program.board[2, 3] = true;
+            Program.board[3, 3] = true;
         }
 
         // Draws the board to the console.
